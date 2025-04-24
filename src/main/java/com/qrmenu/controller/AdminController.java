@@ -56,9 +56,13 @@ public class AdminController {
                         Category::getId,
                         productService::findActiveByCategory
                 ));
+        List<Product> unassignedProducts = allProductsList.stream()
+                .filter(p -> p.getCategory() == null)
+                .collect(Collectors.toList());
         model.addAttribute("categories", categories);
         model.addAttribute("productsByCategory", productsByCategoryMap);
         model.addAttribute("allProducts", allProductsList);
+        model.addAttribute("unassignedProducts", unassignedProducts);
         model.addAttribute("product", new Product());
         model.addAttribute("category", new Category());
         return "admin/product-list";
@@ -107,5 +111,19 @@ public class AdminController {
     public String saveCategory(@ModelAttribute Category category) {
         categoryService.save(category);
         return "redirect:/admin/products";
+    }
+
+    @PostMapping("/products/assign/{prodId}/{catId}")
+    @ResponseBody
+    public void assignCategory(
+            @PathVariable Long prodId,
+            @PathVariable Long catId
+    ) {
+        Product p = productService.findById(prodId);
+        Category c = categoryService.findById(catId);
+        // ürünün eski kategorisini temizlemek isterseniz:
+        if(p.getCategory()!=null){ p.getCategory().getProducts().remove(p); }
+        p.setCategory(c);
+        productService.save(p);
     }
 }
