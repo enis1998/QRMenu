@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:lang="${param.lang=='en'} ? 'en' : 'tr'">
+<head>
+    <!-- TYPE + CHARSET -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title th:text="#{login.title}">Sign In</title>
+
+    <!-- Tailwind JS -->
+    <script th:src="@{/js/tailwind-3.4.3.js}"></script>
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<!-- Dil Seçici (bayraklar yan yana) -->
+<header class="absolute top-4 right-4 flex space-x-2">
+    <a th:href="@{/admin/login(lang='tr')}"
+       class="inline-block">
+        <img th:src="@{/images/tr.png}" alt="TR" class="w-6 h-4"/>
+    </a>
+    <a th:href="@{/admin/login(lang='en')}"
+       class="inline-block">
+        <img th:src="@{/images/en.png}" alt="EN" class="w-6 h-4"/>
+    </a>
+</header>
+
+<div class="w-full max-w-md bg-white rounded-lg shadow-lg p-8 space-y-6">
+
+    <div th:if="${param.error}"
+         class="px-4 py-3 bg-red-100 border border-red-400 text-red-700 rounded"
+         th:text="#{login.error}">
+        Invalid username or password.
+    </div>
+
+    <form th:action="@{/admin/login(lang=${param.lang})}"
+          method="post"
+          class="space-y-5">
+        <input type="hidden"
+               th:name="${_csrf.parameterName}"
+               th:value="${_csrf.token}"/>
+
+        <div>
+            <label for="username"
+                   class="block text-sm font-medium text-gray-700 mb-1"
+                   th:text="#{login.email}">
+                Email
+            </label>
+            <input id="username"
+                   name="username"
+                   type="email"
+                   required
+                   autofocus
+                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"/>
+        </div>
+
+        <div>
+            <label for="password"
+                   class="block text-sm font-medium text-gray-700 mb-1"
+                   th:text="#{login.password}">
+                Password
+            </label>
+            <input id="password"
+                   name="password"
+                   type="password"
+                   required
+                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"/>
+        </div>
+
+        <div class="flex items-center justify-between text-sm">
+            <label class="inline-flex items-center text-gray-600">
+                <input type="checkbox"
+                       name="remember-me"
+                       class="form-checkbox rounded text-indigo-600"/>
+                <span class="ml-2" th:text="#{login.remember}">
+                        Remember me
+                    </span>
+            </label>
+            <a th:href="@{/admin/forgotPassword(lang=${param.lang})}"
+               class="text-indigo-600 hover:underline"
+               th:text="#{login.forgot}">
+                Forgot your password?
+            </a>
+        </div>
+
+        <button type="submit"
+                class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                th:text="#{login.button}">
+            SIGN IN
+        </button>
+    </form>
+</div>
+</body>
+</html>

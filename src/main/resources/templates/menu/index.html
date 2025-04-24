@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Menümüz</title>
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<!-- Header -->
+<header class="bg-white shadow sticky top-0 z-20">
+    <div class="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
+        <h1 class="text-3xl font-semibold text-indigo-700">Menümüz</h1>
+        <!-- QR ikonu -->
+        <svg class="w-8 h-8 text-indigo-500" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 3h4v4H3V3zm2 2H5V5h2v2zM3 13h4v4H3v-4zm2 2H5v-2h2v2zM13 3h4v4h-4V3zm2 2h0V5h2v2zM9 3h2v2H9V3zM9 7h2v2H9V7zm4 4h2v2h-2v-2zm-4 4h2v2H9v-2zm4 0h2v2h-2v-2z"/>
+        </svg>
+    </div>
+</header>
+
+<main class="max-w-2xl mx-auto px-4 py-6">
+
+    <!-- Boş kategori uyarısı -->
+    <div th:if="${categories.empty}" class="text-center text-gray-500 mt-12">
+        📝 Henüz gösterilecek kategori yok.
+    </div>
+
+    <!-- Kategori bölümleri -->
+    <section th:each="cat : ${categories}" class="mt-8">
+        <!-- Kategori Başlığı -->
+        <h2 class="text-2xl font-semibold text-gray-700 border-b-2 border-indigo-300 pb-1"
+            th:text="${cat.name}">
+            Kategori Adı
+        </h2>
+
+        <!-- Ürünler Listesi -->
+        <div class="mt-4 space-y-6">
+            <div th:each="product : ${cat.products}" th:if="${product.active}"
+                 class="bg-white rounded-xl shadow-md flex overflow-hidden">
+
+                <!-- Ürün Görseli -->
+                <div class="w-24 h-24 flex-shrink-0">
+                    <img th:src="@{/products/{id}/image(id=${product.id})}"
+                         th:alt="${product.name}"
+                         class="w-full h-full object-cover"/>
+                </div>
+
+                <!-- Ürün Bilgileri -->
+                <div class="p-4 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900" th:text="${product.name}">
+                            Ürün Adı
+                        </h3>
+                        <p class="text-gray-600 text-sm mt-1" th:text="${product.description}">
+                            Ürün açıklaması...
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between mt-4">
+              <span class="text-indigo-600 font-semibold text-lg"
+                    th:text="${#numbers.formatDecimal(product.price,1,'POINT',2,'NONE')} + ' ₺'">
+                0,00 ₺
+              </span>
+                        <!-- Şık bir “detay” butonu ekleyebilirsiniz -->
+                        <a href="#" class="text-sm text-indigo-500 hover:underline">Detay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<!-- Footer -->
+<footer class="py-4 mt-12 bg-white text-center text-gray-500 text-sm">
+    © 2025 QRMenu • Tüm hakları saklıdır.
+</footer>
+</body>
+</html>

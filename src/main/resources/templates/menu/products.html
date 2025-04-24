@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${category.name} + ' – Test Café'">Kategori – Test Café</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<header class="bg-white shadow sticky top-0 z-10">
+    <div class="max-w-md mx-auto p-4 flex items-center">
+        <button onclick="history.back()"
+                class="text-gray-600 hover:text-gray-800 mr-3">
+            ←
+        </button>
+        <h1 class="text-xl font-bold flex-1" th:text="${category.name}">Kategori Adı</h1>
+    </div>
+</header>
+
+<main class="max-w-md mx-auto p-4 space-y-4">
+
+    <div th:if="${products.empty}" class="text-center text-gray-500 py-16">
+        Bu kategoride ürün bulunamadı.
+    </div>
+
+    <div th:each="prod : ${products}" th:if="${prod.active}"
+         class="bg-white rounded-lg shadow flex overflow-hidden">
+        <!-- Resim -->
+        <div class="w-24 h-24 flex-shrink-0">
+            <img th:src="@{/products/{id}/image(id=${prod.id})}"
+                 th:alt="${prod.name}"
+                 class="w-full h-full object-cover"/>
+        </div>
+        <!-- Bilgiler -->
+        <div class="p-3 flex-1 flex flex-col justify-between">
+            <div>
+                <h2 class="text-lg font-medium" th:text="${prod.name}">Ürün</h2>
+                <p class="text-gray-600 text-sm mt-1" th:text="${prod.description}">Açıklama…</p>
+            </div>
+            <div class="flex items-center justify-between mt-2">
+          <span class="text-indigo-600 font-semibold text-base"
+                th:text="${#numbers.formatDecimal(prod.price,1,'POINT',2,'NONE')} + '$'">
+            0,00 $
+          </span>
+                <span th:if="${!prod.available}"
+                      class="text-red-500 text-xs">Stokta yok</span>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>

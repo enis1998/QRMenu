@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout}">
+<div th:fragment="content" class="mt-5 text-center">
+    <h1 class="text-danger">Beklenmeyen Bir Hata Oluştu</h1>
+    <p th:text="${errorMessage}">Hata mesajı buraya gelecek</p>
+    <a th:href="@{/menu}" class="btn btn-primary mt-3">Menüye Dön</a>
+</div>
+</html>

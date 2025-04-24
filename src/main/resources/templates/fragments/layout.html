@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>QRMenu</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+<nav>…navbar burada…</nav>
+<main th:fragment="layout">
+    <div th:insert="~{::content}"></div>
+</main>
+<script th:src="@{/js/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
