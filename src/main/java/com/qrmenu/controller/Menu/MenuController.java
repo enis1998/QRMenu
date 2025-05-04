@@ -1,4 +1,4 @@
-package com.qrmenu.controller;
+package com.qrmenu.controller.Menu;
 
 
 import com.qrmenu.entity.Category;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/menu")
@@ -26,15 +27,16 @@ public class MenuController {
 
     @GetMapping
     public String showCategories(Model m) {
-        m.addAttribute("categories", categoryService.findAll());
+        m.addAttribute("categories", categoryService.findAllByStatus());
         return "menu/categories";
     }
 
     @GetMapping("/category/{id}")
-    public String showProducts(@PathVariable Long id, Model m) {
+    public String showProducts(@PathVariable UUID id, Model m) {
         Category cat = categoryService.findById(id);
         m.addAttribute("category", cat);
         m.addAttribute("products", productService.findActiveByCategory(cat));
         return "menu/products";
     }
+
 }

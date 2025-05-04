@@ -1,6 +1,7 @@
-package com.qrmenu.mapper;
+package com.qrmenu.mapper.User;
 
-import com.qrmenu.dto.AdminUserDto;
+import com.qrmenu.dto.User.requests.AdminUserRequestDto;
+import com.qrmenu.dto.User.responses.AdminUserResponseDto;
 import com.qrmenu.entity.AdminUser;
 import org.springframework.stereotype.Component;
 
@@ -8,9 +9,9 @@ import org.springframework.stereotype.Component;
 public class AdminUserMapperImpl implements AdminUserMapper {
 
     @Override
-    public AdminUserDto toDto(AdminUser entity) {
+    public AdminUserResponseDto toDto(AdminUser entity) {
         if (entity == null) return null;
-        AdminUserDto dto = new AdminUserDto();
+        AdminUserResponseDto dto = new AdminUserResponseDto();
         dto.setId(entity.getId());
         dto.setEmail(entity.getEmail());
         dto.setPassword(entity.getPassword());
@@ -20,7 +21,7 @@ public class AdminUserMapperImpl implements AdminUserMapper {
     }
 
     @Override
-    public AdminUser toEntity(AdminUserDto dto) {
+    public AdminUser toEntity(AdminUserRequestDto dto) {
         if (dto == null) return null;
         AdminUser entity = new AdminUser();
         entity.setEmail(dto.getEmail());
@@ -31,7 +32,7 @@ public class AdminUserMapperImpl implements AdminUserMapper {
     }
 
     @Override
-    public void updateEntityFromDto(AdminUserDto dto, AdminUser entity) {
+    public void updateEntityFromDto(AdminUserRequestDto dto, AdminUser entity) {
         if (dto == null || entity == null) return;
         entity.setEmail(dto.getEmail());
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {

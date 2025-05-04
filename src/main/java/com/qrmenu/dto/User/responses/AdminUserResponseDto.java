@@ -1,12 +1,13 @@
-package com.qrmenu.dto;
+package com.qrmenu.dto.User.responses;
 
 import com.qrmenu.enums.Role;
 
 import javax.validation.constraints.*;
+import java.util.UUID;
 
-public class AdminUserDto {
+public class AdminUserResponseDto {
 
-    private Long id;
+    private UUID id;
 
     @NotBlank(message = "{validation.email.notBlank}")
     @Email(message = "{validation.email.invalid}")
@@ -25,14 +26,14 @@ public class AdminUserDto {
 
     private boolean enabled;
 
-    public AdminUserDto() {
+    public AdminUserResponseDto() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

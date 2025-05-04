@@ -4,10 +4,12 @@ package com.qrmenu.service;
 import com.qrmenu.entity.Category;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CategoryService {
+    List<Category> findAllByStatus();
     List<Category> findAll();
-    Category findById(Long id);
+    Category findById(UUID id);
     Category save(Category category);
-    void delete(Long id);
+    void delete(UUID id);
 }
