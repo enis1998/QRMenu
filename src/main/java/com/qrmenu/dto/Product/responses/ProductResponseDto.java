@@ -1,65 +1,39 @@
-package com.qrmenu.entity;
+package com.qrmenu.dto.Product.responses;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.qrmenu.entity.Category;
 import com.qrmenu.enums.Status;
-import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-@Entity
-public class Product {
-
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+@JsonIgnoreProperties("category")
+public class ProductResponseDto {
     private UUID id;
 
     @NotBlank(message = "Ürün adı boş olamaz")
     private String name;
 
-    @Column(length = 1000)
     @NotBlank(message = "Açıklama boş olamaz")
     private String description;
 
-    @NotBlank(message = "Fiyat girilmelidir")
+    @NotNull
     @Min(value = 0, message = "Fiyat negatif olamaz")
     private Double price;
 
     private Status status = Status.ACTIVE;
-
-    // Resim verisini veritabanında saklamak için BLOB kullanımı
-    @Lob
-    @Column(
-            name = "image_data",
-            columnDefinition = "LONGBLOB"   // veya "MEDIUMBLOB"
-    )
-    private byte[] image;
-
-    // Resmin MIME tipini saklamak için
-    private String imageContentType;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    @JsonIgnoreProperties("products")
+    @JsonIgnore
     private Category category;
 
-    public Product() {
-    }
+    private byte[] image;
 
-    public Product(String name, String description, Double price, Status status, byte[] image, String imageContentType, Category category) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.status = status;
-        this.image = image;
-        this.imageContentType = imageContentType;
-        this.category = category;
+    private String imageContentType;
+
+    public ProductResponseDto() {
     }
 
     public UUID getId() {
@@ -102,6 +76,14 @@ public class Product {
         this.status = status;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public byte[] getImage() {
         return image;
     }
@@ -116,13 +98,5 @@ public class Product {
 
     public void setImageContentType(String imageContentType) {
         this.imageContentType = imageContentType;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
     }
 }

@@ -53,19 +53,19 @@
     <!-- Kullanıcı Sayısı -->
     <div class="bg-white rounded-lg shadow p-6">
       <h2 class="text-xl font-medium mb-2">Kullanıcı Sayısı</h2>
-      <p class="text-3xl font-bold" th:text="${users.size()}">0</p>
+      <p class="text-3xl font-bold" th:text="${users}">0</p>
     </div>
 
     <!-- Ürün Sayısı -->
     <div class="bg-white rounded-lg shadow p-6">
       <h2 class="text-xl font-medium mb-2">Ürün Sayısı</h2>
-      <p class="text-3xl font-bold" th:text="${products.size()}">0</p>
+      <p class="text-3xl font-bold" th:text="${products}">0</p>
     </div>
 
     <!-- Bekleyen Onaylar: sadece ADMIN görsün -->
     <div sec:authorize="hasRole('ADMIN')" class="bg-white rounded-lg shadow p-6">
       <h2 class="text-xl font-medium mb-2">Bekleyen Onaylar</h2>
-      <p class="text-3xl font-bold" th:text="${pendingUpdates.size()}">0</p>
+      <p class="text-3xl font-bold" th:text="${pendingUpdates}">0</p>
     </div>
   </div>
 </main>

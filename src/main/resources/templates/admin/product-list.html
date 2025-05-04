@@ -10,6 +10,22 @@
     <link rel="stylesheet" th:href="@{/css/dragAndSort.css}"/>
     <script th:src="@{/js/jquery.min.js}"></script>
     <script th:src="@{/js/dragAndSort.js}"></script>
+
+    <style>
+        /* Custom arrow */
+        .custom-select {
+            @apply relative;
+        }
+        .custom-select select {
+            @apply appearance-none w-full bg-white border border-gray-300 rounded px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+        }
+        .custom-select::after {
+            content: '';
+            @apply pointer-events-none absolute inset-y-0 right-3 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-gray-600;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
@@ -83,8 +99,12 @@
                         <td class="px-3 py-1" th:text="${stat.index + 1}">1</td>
                         <td class="px-3 py-1" th:text="${cat.name}">Kategori Adı</td>
                         <td class="px-3 py-1 text-center space-x-2">
-                            <button class="text-indigo-600 editCatBtn"
-                                    th:attr="data-id=${cat.id},data-name=${cat.name}">Düzenle
+                            <button type="button" class="text-indigo-600 editCatBtn"
+                                    th:attr="
+                                       data-id=${cat.id},
+                                       data-name=${cat.name},
+                                       data-status=${cat.status}">
+                                Düzenle
                             </button>
                             <form th:action="@{/admin/categories/delete/{id}(id=${cat.id})}" method="post"
                                   class="inline">
@@ -112,13 +132,14 @@
                     <tr th:each="p,stat: ${allProducts}">
                         <td class="px-3 py-1" th:text="${stat.index + 1}">1</td>
                         <td class="px-3 py-1" th:text="${p.name}">Ürün Adı</td>
-                        <td class="px-3 py-1 text-right" th:text="${#numbers.formatDecimal(p.price,1,2)} + '₺'">0 ₺</td>
+                        <td class="px-3 py-1 text-right" th:text="${#numbers.formatDecimal(p.price,1,2)} + ' €'">0 €</td>
                         <td class="px-3 py-1 text-center space-x-2">
-                            <button class="text-indigo-600 editProdBtn"
-                                    th:attr="data-id=${p.id},
-                                   data-name=${p.name},
-                                   data-price=${p.price},
-                                   data-cat=${p.category.id}">
+                            <button type="button" class="text-indigo-600 editProdBtn"
+                                    th:attr="
+                                      data-id=${p.id},
+                                      data-name=${p.name},
+                                      data-price=${p.price},
+                                      data-cat=${p.category?.id}">
                                 Düzenle
                             </button>
                             <form th:action="@{/admin/products/delete/{id}(id=${p.id})}" method="get" class="inline">
@@ -171,10 +192,11 @@
                          class="product-item p-2 mb-2 bg-indigo-50 rounded cursor-move"
                          th:attr="data-prod-id=${p.id}"
                          th:text="${p.name}">
-                        Ürün Adı
                     </div>
+
                 </div>
             </div>
+        </div>
         </div>
 
         <!-- CSRF token -->
@@ -185,8 +207,8 @@
 
 <!-- Offcanvas Drawer (Kategori/Ürün ekle/düzenle) -->
 <div id="drawer"
-     class="fixed inset-y-0 right-0 w-full md:w-1/3 bg-white shadow-xl transform translate-x-full transition-transform">
-    <div class="p-4 border-b flex justify-between items-center">
+     class="fixed inset-y-0 right-0 w-full md:w-1/3 bg-white shadow-xl transform translate-x-full transition-transform
+         flex flex-col overflow-y-auto"><div class="p-4 border-b flex justify-between items-center">
         <h4 id="drawerTitle" class="text-lg font-semibold">Başlık</h4>
         <button id="closeDrawer" class="text-2xl">&times;</button>
     </div>
@@ -210,11 +232,11 @@
                 </label>
             </div>
             <div class="flex items-center">
-                <input type="checkbox"
-                       th:field="*{active}"
-                       id="catActive"
-                       class="mr-2"/>
-                <label for="catActive" class="cursor-pointer">Aktif</label>
+                <label for="catStatus">Durum</label>
+                <select th:field="*{status}" id="catStatus" class="w-full px-3 py-2 border rounded">
+                    <option th:value="ACTIVE">Aktif</option>
+                    <option th:value="INACTIVE">Pasif</option>
+                </select>
             </div>
             <div class="flex justify-end space-x-2">
                 <button type="button" id="cancelCat" class="px-4 py-2 bg-gray-200 rounded">İptal</button>
@@ -238,6 +260,7 @@
                        th:field="*{name}"
                        class="w-full px-3 py-2 border rounded"
                        required/>
+                <p id="prodName-error" class="text-red-600 text-sm mt-1"></p>
             </div>
 
             <!-- AÇIKLAMA -->
@@ -248,17 +271,25 @@
                           id="prodDescription"
                           class="w-full px-3 py-2 border rounded"
                           required></textarea>
+                <p id="prodDescription-error" class="text-red-600 text-sm mt-1"></p>
             </div>
 
             <!-- FİYAT -->
-            <div>
-                <label class="block mb-1">Fiyat</label>
+            <label class="block mb-1">Fiyat</label>
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center justify-center
+                   w-12 bg-gray-200 text-gray-600 rounded-l border border-r-0
+                   pointer-events-none">
+                    &euro;
+                </span>
                 <input type="number"
-                       step="0.01"
+                       step="0.1"
+                       name="price"
                        id="prodPrice"
                        th:field="*{price}"
-                       class="w-full px-3 py-2 border rounded"
+                       class="w-full pl-14 pr-3 py-2 border rounded-r"
                        required/>
+                <p id="prodPrice-error" class="text-red-600 text-sm mt-1"></p>
             </div>
 
             <!-- KATEGORİ -->
@@ -275,22 +306,26 @@
 
             <!-- AKTİF Mİ? -->
             <div class="flex items-center">
-                <input type="checkbox"
-                       th:field="*{active}"
-                       id="prodActive"
-                       class="mr-2"/>
-                <label for="prodActive" class="cursor-pointer">Aktif</label>
+                <label for="prodStatus" class="whitespace-nowrap">Durum</label>
+                <select th:field="*{status}" id="prodStatus" class="w-full px-3 py-2 border rounded">
+                    <option th:value="ACTIVE">Aktif</option>
+                    <option th:value="INACTIVE">Pasif</option>
+                </select>
             </div>
 
-            <!-- PARENT_ID (opsiyonel) -->
-            <input type="hidden" th:field="*{parentId}"/>
+            <!-- 1) Resim önizleme için ayrı container -->
+            <div id="edit-image-container" class="hidden mb-4">
+                <label class="block mb-1">Mevcut Resim</label>
+                <img id="edit-img"
+                     src=""
+                     alt="Ürün Resmi"
+                     class="w-32 h-32 object-contain rounded border"/>
+            </div>
 
-            <!-- RESİM YÜKLE -->
-            <div>
-                <label class="block mb-1">Resim</label>
-                <input type="file"
-                       name="imageFile"
-                       class="w-full"/>
+            <!-- 2) Dosya seçme input'u her zaman burada -->
+            <div class="mb-4">
+                <label class="block mb-1">Yeni Resim Seç</label>
+                <input type="file" name="imageFile" class="w-full"/>
             </div>
 
             <div class="flex justify-end space-x-2">
@@ -302,93 +337,178 @@
 </div>
 
 <script>
-    // TAB değişimi
-    document.getElementById('tabTable').addEventListener('click', () => {
-        document.getElementById('sectionTable').classList.remove('hidden');
-        document.getElementById('sectionDrag').classList.add('hidden');
-        document.querySelectorAll('#tabTable,#tabDrag').forEach(b => b.classList.toggle('border-b-2'));
-    });
-    document.getElementById('tabDrag').addEventListener('click', () => {
-        document.getElementById('sectionTable').classList.add('hidden');
-        document.getElementById('sectionDrag').classList.remove('hidden');
-        document.querySelectorAll('#tabTable,#tabDrag').forEach(b => b.classList.toggle('border-b-2'));
-    });
-
-    // Offcanvas drawer kontrolü
-    const drawer = document.getElementById('drawer');
-
-    function openForm(type, data = {}) {
-        drawer.classList.remove('translate-x-full');
-        document.getElementById('categoryForm').classList.toggle('hidden', type !== 'cat');
-        document.getElementById('productForm').classList.toggle('hidden', type !== 'prod');
-        if (type === 'cat') {
-            document.getElementById('drawerTitle').textContent = data.id ? 'Kategori Düzenle' : 'Yeni Kategori';
-            document.getElementById('catId').value = data.id || '';
-            document.getElementById('catName').value = data.name || '';
-        } else {
-            document.getElementById('drawerTitle').textContent = data.id ? 'Ürün Düzenle' : 'Yeni Ürün';
-            document.getElementById('prodId').value = data.id || '';
-            document.getElementById('prodName').value = data.name || '';
-            document.getElementById('prodPrice').value = data.price || '';
-            document.getElementById('prodCat').value = data.categoryId || '';
-            document.getElementById('prodDescription').value = data.description;
-            document.getElementById('prodActive').checked = (data.active === 'true');
-        }
-    }
-
-    document.getElementById('closeDrawer').onclick = () => drawer.classList.add('translate-x-full');
-    document.getElementById('cancelCat').onclick = () => drawer.classList.add('translate-x-full');
-    document.getElementById('cancelProd').onclick = () => drawer.classList.add('translate-x-full');
-
-    // Kategori / Ürün ekle/düzenle butonları
-    ['addCategoryBtn', 'addCategoryBtn2'].forEach(id =>
-        document.getElementById(id).addEventListener('click', () => openForm('cat'))
-    );
-    ['addProductBtn', 'addProductBtn2'].forEach(id =>
-        document.getElementById(id).addEventListener('click', () => openForm('prod'))
-    );
-    document.querySelectorAll('.editCatBtn').forEach(btn =>
-        btn.addEventListener('click', () => openForm('cat', {
-            id: btn.dataset.id,
-            name: btn.dataset.name,
-            active: btn.dataset.active
-        }))
-    );
-    document.querySelectorAll('.editProdBtn').forEach(btn =>
-        btn.addEventListener('click', () => openForm('prod', {
-            id: btn.dataset.id,
-            name: btn.dataset.name,
-            price: btn.dataset.price,
-            categoryId: btn.dataset.cat,
-            description: btn.dataset.description,
-            active: btn.dataset.active
-        }))
-    );
-
-    // DRAG & DROP init
     document.addEventListener('DOMContentLoaded', () => {
-        // kategori drop bölgelerini init et
-        document.querySelectorAll('.category-drop').forEach(dropEl => {
-            new Sortable(dropEl, {
-                group: 'shared',
-                animation: 150,
-                onAdd: evt => {
-                    const prodId = evt.item.dataset.prodId;
-                    const catId  = evt.to.dataset.catId;
-                    fetch(`/admin/products/assign/${prodId}/${catId}`, {
-                        method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value }
-                    });
-                }
+        const drawer   = document.getElementById('drawer');
+        const catForm  = document.getElementById('categoryForm');
+        const prodForm = document.getElementById('productForm');
+        const csrf     = document.querySelector('input[name="_csrf"]').value;
+
+        // ——— TAB GEÇİŞLERİ ———
+        const tabTable = document.getElementById('tabTable');
+        const tabDrag  = document.getElementById('tabDrag');
+        const secTable = document.getElementById('sectionTable');
+        const secDrag  = document.getElementById('sectionDrag');
+
+        function activateTable() {
+            secTable.classList.remove('hidden');
+            secDrag.classList.add('hidden');
+            tabTable.classList.add('border-b-2','border-indigo-600','font-medium');
+            tabDrag.classList.remove('border-b-2','border-indigo-600','font-medium');
+        }
+        function activateDrag() {
+            secTable.classList.add('hidden');
+            secDrag.classList.remove('hidden');
+            tabDrag.classList.add('border-b-2','border-indigo-600','font-medium');
+            tabTable.classList.remove('border-b-2','border-indigo-600','font-medium');
+        }
+
+        tabTable.onclick = activateTable;
+        tabDrag.onclick  = activateDrag;
+
+        // İlk açılışta table view aktif olsun
+        activateTable();
+
+
+        // ——— FORM AÇMA / KAPAMA ———
+        function openCategoryForm(data = {}) {
+            drawer.classList.remove('translate-x-full');
+            prodForm.classList.add('hidden');
+            catForm .classList.remove('hidden');
+            document.getElementById('drawerTitle').textContent = data.id ? 'Kategori Düzenle' : 'Yeni Kategori';
+            document.getElementById('catId').value   = data.id   || '';
+            document.getElementById('catName').value = data.name || '';console.log(data);
+            document.getElementById('catStatus').value = data.status;
+        }
+
+        function openProductForm(p = {}) {
+            drawer.classList.remove('translate-x-full');
+            catForm .classList.add('hidden');
+            prodForm.classList.remove('hidden');
+            // Validation mesajları temizle
+            ['prodName','prodDescription','prodPrice']
+                .forEach(id => document.getElementById(id+'-error').textContent = '');
+            // Preview gizle
+            document.getElementById('edit-image-container').classList.add('hidden');
+
+            // Formu doldur
+            document.getElementById('drawerTitle').textContent = p.id ? 'Ürün Düzenle' : 'Yeni Ürün';
+            document.getElementById('prodId').value          = p.id          || '';
+            document.getElementById('prodName').value        = p.name        || '';
+            document.getElementById('prodDescription').value = p.description || '';
+            document.getElementById('prodPrice').value       = p.price       || '';
+            document.getElementById('prodCat').value         = (p.category && p.category.id) || '';
+            document.getElementById('prodStatus').value      = p.status || p.status.active;
+
+            if (p.id) {
+                const img = document.getElementById('edit-img');
+                img.src = `/admin/products/${p.id}/image`;
+                img.onerror = () => img.src = '/images/default.png';
+                document.getElementById('edit-image-container').classList.remove('hidden');
+            }
+        }
+
+        // “+ Kategori” / “Düzenle Kategori”
+        ['addCategoryBtn','addCategoryBtn2'].forEach(id =>
+            document.getElementById(id).onclick = () => openCategoryForm()
+        );
+        document.querySelectorAll('.editCatBtn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.preventDefault();
+                const data = {
+                    id:   btn.dataset.id,
+                    name: btn.dataset.name,
+                    status: btn.dataset.status
+                };
+                openCategoryForm(data);
             });
         });
 
-        // tüm ürünler listesi draggable olsun
+        // “+ Ürün” / “Düzenle Ürün”
+        ['addProductBtn','addProductBtn2'].forEach(id =>
+            document.getElementById(id).onclick = () => openProductForm()
+        );
+        document.querySelectorAll('.editProdBtn').forEach(btn => {
+            btn.addEventListener('click', async e => {
+                e.preventDefault();
+                const id = btn.dataset.id;
+                const p  = await fetch(`/admin/products/edit/${id}`)
+                    .then(r => r.json());
+                openProductForm(p);
+            });
+        });
+
+        // Drawer kapatma tuşları
+        ['closeDrawer','cancelCat','cancelProd'].forEach(id =>
+            document.getElementById(id).onclick = () =>
+                drawer.classList.add('translate-x-full')
+        );
+
+        // ——— AJAX KAYDET ———
+        catForm .onsubmit = async e => {
+            e.preventDefault();
+            const fd = new FormData(catForm);
+            await fetch('/admin/categories', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrf },
+                body: fd
+            });
+            location.reload();
+        };
+
+        prodForm.onsubmit = async e => {
+            e.preventDefault();
+            // Basit client‐side validation
+            let ok = true;
+            const nameErr = document.getElementById('prodName-error');
+            if (!prodForm.prodName.value.trim()) {
+                nameErr.textContent = 'Ürün adı zorunlu'; ok = false;
+            } else nameErr.textContent = '';
+            const descErr = document.getElementById('prodDescription-error');
+            if (!prodForm.prodDescription.value.trim()) {
+                descErr.textContent = 'Açıklama zorunlu'; ok = false;
+            } else descErr.textContent = '';
+            const priceErr = document.getElementById('prodPrice-error');
+            const v = parseFloat(prodForm.prodPrice.value);
+            if (isNaN(v) || v <= 0) {
+                priceErr.textContent = 'Geçerli bir fiyat girin'; ok = false;
+            } else priceErr.textContent = '';
+            if (!ok) return;
+
+            const id  = document.getElementById('prodId').value;
+            const url = id ? `/admin/products/update/${id}` : '/admin/products';
+            const fd  = new FormData(prodForm);
+            await fetch(url, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrf },
+                body: fd
+            });
+            drawer.classList.add('translate-x-full');
+            location.reload();
+        };
+
+        // ——— Drag & Drop ———
+        document.querySelectorAll('.category-drop').forEach(el => {
+            new Sortable(el, {
+                group: 'shared', animation: 150,
+                onAdd: evt => fetch(
+                    `/admin/products/assign/${evt.item.dataset.prodId}/${evt.to.dataset.catId}`,
+                    { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf } }
+                ).then(r => r.ok && location.reload())
+                    .catch(err => console.error('Assign error:', err))
+            });
+        });
         new Sortable(document.getElementById('unassignedProducts'), {
-            group: 'shared',
-            animation: 150
+            group: 'shared', animation: 150,
+            onAdd: evt => fetch(
+                `/admin/products/unassigned/${evt.item.dataset.prodId}`,
+                { method:'POST', credentials:'same-origin', headers:{ 'X-CSRF-TOKEN':csrf } }
+            ).then(r => r.ok && location.reload())
+                .catch(err => console.error('Assign error:', err))
         });
     });
 </script>
+
+
+
 </body>
 </html>

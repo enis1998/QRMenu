@@ -1,40 +1,31 @@
-package com.qrmenu.entity;
+package com.qrmenu.dto.User.requests;
 
 import com.qrmenu.enums.Role;
-import jakarta.persistence.*;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.UUID;
-import org.hibernate.annotations.GenericGenerator;
 
-@Entity
-@Table(name = "admin_user")
-public class AdminUser {
-
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+public class AdminUserRequestDto {
     private UUID id;
 
-    @NotBlank
+    @NotBlank(message = "{validation.email.notBlank}")
+    @Email(message = "{validation.email.invalid}")
     @Size(min = 3, max = 50)
-    @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "{validation.password.notBlank}")
+    @Size(min = 8, message = "{validation.password.size}")
+    // en az bir büyük harf, bir rakam ve bir özel karakter
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).+$",
+            message = "{validation.password.pattern}")
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @NotNull(message = "{validation.role.notNull}")
     private Role role;
 
-    private boolean enabled = true;
+    private boolean enabled;
 
-    public AdminUser() {
+    public AdminUserRequestDto() {
     }
 
     public UUID getId() {
@@ -77,4 +68,3 @@ public class AdminUser {
         this.enabled = enabled;
     }
 }
-
