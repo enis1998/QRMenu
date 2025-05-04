@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ChangeRequestServiceImpl implements ChangeRequestService {
@@ -30,13 +31,18 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     }
 
     @Override
+    public Long countByPending() {
+        return changeRequestRepository.countByStatus(RequestStatus.PENDING);
+    }
+
+    @Override
     public List<ChangeRequest> findAllPending() {
         return changeRequestRepository.findByStatus(RequestStatus.PENDING);
     }
 
     @Transactional
     @Override
-    public ChangeRequest approveRequest(Long id) {
+    public ChangeRequest approveRequest(UUID id) {
         ChangeRequest request = changeRequestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
         request.setStatus(RequestStatus.APPROVED);
@@ -51,7 +57,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     }
 
     @Override
-    public ChangeRequest rejectRequest(Long id) {
+    public ChangeRequest rejectRequest(UUID id) {
         ChangeRequest request = changeRequestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
         request.setStatus(RequestStatus.REJECTED);
@@ -59,7 +65,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     }
 
     @Override
-    public ChangeRequest findById(Long id) {
+    public ChangeRequest findById(UUID id) {
         return changeRequestRepository.findById(id).orElse(null);
     }
 }

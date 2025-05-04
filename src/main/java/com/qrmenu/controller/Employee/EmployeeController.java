@@ -1,4 +1,4 @@
-package com.qrmenu.controller;
+package com.qrmenu.controller.Employee;
 
 import com.qrmenu.entity.ChangeRequest;
 import com.qrmenu.entity.Product;
@@ -8,6 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/admin/employee")
@@ -24,7 +26,7 @@ public class EmployeeController {
 
     // Çalışan ürün değişikliği isteğini oluşturmak için formu gösterir
     @GetMapping("/products/edit/{id}")
-    public String editProductRequest(@PathVariable Long id, Model model) {
+    public String editProductRequest(@PathVariable UUID id, Model model) {
         Product product = productService.findById(id);
         if (product == null) {
             return "redirect:/menu";
@@ -35,7 +37,7 @@ public class EmployeeController {
 
     // Çalışan değişiklik isteğini gönderir
     @PostMapping("/products/request-update/{id}")
-    public String submitProductChangeRequest(@PathVariable Long id,
+    public String submitProductChangeRequest(@PathVariable UUID id,
                                              @RequestParam("newName") String newName,
                                              @RequestParam("newDescription") String newDescription,
                                              @RequestParam("newPrice") Double newPrice,

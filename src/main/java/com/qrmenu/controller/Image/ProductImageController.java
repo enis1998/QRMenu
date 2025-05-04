@@ -1,4 +1,4 @@
-package com.qrmenu.controller;
+package com.qrmenu.controller.Image;
 
 import com.qrmenu.entity.Product;
 import com.qrmenu.service.ProductService;
@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.UUID;
 
 @Controller
 public class ProductImageController {
@@ -19,7 +21,7 @@ public class ProductImageController {
     }
 
     @GetMapping("/product/image/{id}")
-    public ResponseEntity<byte[]> getProductImage(@PathVariable Long id) {
+    public ResponseEntity<byte[]> getProductImage(@PathVariable UUID id) {
         Product product = productService.findById(id);
         if (product == null || product.getImage() == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

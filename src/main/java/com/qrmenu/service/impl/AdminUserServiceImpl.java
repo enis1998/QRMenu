@@ -1,12 +1,13 @@
 package com.qrmenu.service.impl;
 
 import com.qrmenu.entity.AdminUser;
-import com.qrmenu.mapper.AdminUserMapper;
+import com.qrmenu.mapper.User.AdminUserMapper;
 import com.qrmenu.repository.AdminUserRepository;
 import com.qrmenu.service.AdminUserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AdminUserServiceImpl implements AdminUserService {
@@ -20,12 +21,17 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    public Long countAll() {
+        return repo.count();
+    }
+
+    @Override
     public List<AdminUser> findAll() {
         return repo.findAll();
     }
 
     @Override
-    public AdminUser findById(Long id) {
+    public AdminUser findById(UUID id) {
         return repo.findById(id).orElse(null);
     }
 
@@ -40,7 +46,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(UUID id) {
         repo.deleteById(id);
     }
 }

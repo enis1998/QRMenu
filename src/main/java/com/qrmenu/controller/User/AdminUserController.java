@@ -1,13 +1,15 @@
-package com.qrmenu.controller;
+package com.qrmenu.controller.User;
 
-import com.qrmenu.controller.contract.AdminUserContract;
-import com.qrmenu.dto.AdminUserDto;
+import com.qrmenu.controller.User.contract.AdminUserContract;
+import com.qrmenu.dto.User.requests.AdminUserRequestDto;
+import com.qrmenu.dto.User.responses.AdminUserResponseDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/admin")
@@ -40,12 +42,12 @@ public class AdminUserController {
     @GetMapping("/users")
     public String listUsers(Model model) {
         model.addAttribute("users", userContract.getAllUsers());
-        model.addAttribute("adminUser", new AdminUserDto());
+        model.addAttribute("adminUser", new AdminUserResponseDto());
         return "admin/user-list";
     }
 
     @PostMapping("/users")
-    public String createUser(@Valid @ModelAttribute("adminUser") AdminUserDto dto,
+    public String createUser(@Valid @ModelAttribute("adminUser") AdminUserRequestDto adminUserRequestDto,
                              BindingResult br,
                              Model model) {
         if (br.hasErrors()) {
@@ -54,13 +56,13 @@ public class AdminUserController {
             model.addAttribute("users", userContract.getAllUsers());
             return "admin/user-list";
         }
-        userContract.createUser(dto);
+        userContract.createUser(adminUserRequestDto);
         return "redirect:/admin/users";
     }
 
     @GetMapping("/users/edit/{id}")
-    public String editUserForm(@PathVariable Long id, Model model) {
-        AdminUserDto dto = userContract.getUserById(id);
+    public String editUserForm(@PathVariable UUID id, Model model) {
+        AdminUserResponseDto dto = userContract.getUserById(id);
         if (dto == null) {
             return "redirect:/admin/users";
         }
@@ -70,8 +72,8 @@ public class AdminUserController {
     }
 
     @PostMapping("/users/edit/{id}")
-    public String updateUser(@PathVariable Long id,
-                             @Valid @ModelAttribute("adminUser") AdminUserDto dto,
+    public String updateUser(@PathVariable UUID id,
+                             @Valid @ModelAttribute("adminUser") AdminUserRequestDto dto,
                              BindingResult br) {
         if (br.hasErrors()) {
             return "admin/user-form";
@@ -81,7 +83,7 @@ public class AdminUserController {
     }
 
     @PostMapping("/users/delete/{id}")
-    public String deleteUser(@PathVariable Long id) {
+    public String deleteUser(@PathVariable UUID id) {
         userContract.deleteUser(id);
         return "redirect:/admin/users";
     }

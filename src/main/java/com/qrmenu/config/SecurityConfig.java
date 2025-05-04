@@ -66,6 +66,7 @@ public class SecurityConfig {
                         .requestMatchers("/menu/**", "/css/**","/js/**","/images/**", "/admin/login",
                                 "/admin/login?error", "/admin/forgotPassword").permitAll()
 
+                        .requestMatchers("/admin/dashboard").hasAnyRole("EMPLOYEE","ADMIN")
                         .requestMatchers("/admin/employee/**").hasAnyRole("EMPLOYEE","ADMIN")
 
                         // admin-only:

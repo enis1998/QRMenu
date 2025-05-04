@@ -1,22 +1,30 @@
 package com.qrmenu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.qrmenu.enums.Status;
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID id;
 
     private String name;
-    private boolean active = true;
-    private Long parentId = 0L;
+    private Status status = Status.ACTIVE;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Product> products = new ArrayList<>();
 
     // Constructors
@@ -27,20 +35,12 @@ public class Category {
         this.name = name;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
     }
 
     public String getName() {
@@ -51,12 +51,12 @@ public class Category {
         this.name = name;
     }
 
-    public boolean isActive() {
-        return active;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public List<Product> getProducts() {
@@ -70,7 +70,7 @@ public class Category {
     @Transient
     public List<Product> getActiveProducts() {
         return products.stream()
-                .filter(Product::isActive)
+                .filter(p -> p.getStatus() == Status.ACTIVE)
                 .toList();
     }
 }

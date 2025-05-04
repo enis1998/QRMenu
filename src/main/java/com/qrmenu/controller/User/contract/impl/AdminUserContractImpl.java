@@ -1,15 +1,17 @@
-package com.qrmenu.controller.contract.impl;
+package com.qrmenu.controller.User.contract.impl;
 
-import com.qrmenu.controller.contract.AdminUserContract;
-import com.qrmenu.dto.AdminUserDto;
+import com.qrmenu.controller.User.contract.AdminUserContract;
+import com.qrmenu.dto.User.requests.AdminUserRequestDto;
+import com.qrmenu.dto.User.responses.AdminUserResponseDto;
 import com.qrmenu.entity.AdminUser;
-import com.qrmenu.mapper.AdminUserMapper;
+import com.qrmenu.mapper.User.AdminUserMapper;
 import com.qrmenu.service.AdminUserService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @Transactional
@@ -28,7 +30,7 @@ public class AdminUserContractImpl implements AdminUserContract {
     }
 
     @Override
-    public List<AdminUserDto> getAllUsers() {
+    public List<AdminUserResponseDto> getAllUsers() {
         return userService.findAll()
                 .stream()
                 .map(mapper::toDto)
@@ -36,12 +38,12 @@ public class AdminUserContractImpl implements AdminUserContract {
     }
 
     @Override
-    public AdminUserDto getUserById(Long id) {
+    public AdminUserResponseDto getUserById(UUID id) {
         return mapper.toDto(userService.findById(id));
     }
 
     @Override
-    public AdminUserDto createUser(AdminUserDto dto) {
+    public AdminUserResponseDto createUser(AdminUserRequestDto dto) {
         // şifre hash’leme
         dto.setPassword(encoder.encode(dto.getPassword()));
         AdminUser saved = userService.save(mapper.toEntity(dto));
@@ -49,7 +51,7 @@ public class AdminUserContractImpl implements AdminUserContract {
     }
 
     @Override
-    public AdminUserDto updateUser(Long id, AdminUserDto dto) {
+    public AdminUserResponseDto updateUser(UUID id, AdminUserRequestDto dto) {
         AdminUser existing = userService.findById(id);
         if (existing == null) {
             return null;
@@ -66,7 +68,7 @@ public class AdminUserContractImpl implements AdminUserContract {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(UUID id) {
         userService.delete(id);
     }
 }

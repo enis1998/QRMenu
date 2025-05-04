@@ -1,11 +1,13 @@
 package com.qrmenu.service.impl;
 
 import com.qrmenu.entity.Category;
+import com.qrmenu.enums.Status;
 import com.qrmenu.repository.CategoryRepository;
 import com.qrmenu.service.CategoryService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -18,12 +20,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> findAll() {
-        return categoryRepository.findAllByActiveTrue();
+    public List<Category> findAllByStatus() {
+        return categoryRepository.findAllByStatus(Status.ACTIVE);
     }
 
     @Override
-    public Category findById(Long id) {
+    public List<Category> findAll() {
+        return categoryRepository.findAll();
+    }
+
+    @Override
+    public Category findById(UUID id) {
         return categoryRepository.findById(id).orElse(null);
     }
 
@@ -33,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(UUID id) {
         categoryRepository.deleteById(id);
     }
 }
