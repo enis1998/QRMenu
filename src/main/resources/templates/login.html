@@ -17,16 +17,7 @@
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
 <!-- Dil Seçici (bayraklar yan yana) -->
-<header class="absolute top-4 right-4 flex space-x-2">
-    <a th:href="@{/admin/login(lang='tr')}"
-       class="inline-block">
-        <img th:src="@{/images/tr.png}" alt="TR" class="w-6 h-4"/>
-    </a>
-    <a th:href="@{/admin/login(lang='en')}"
-       class="inline-block">
-        <img th:src="@{/images/en.png}" alt="EN" class="w-6 h-4"/>
-    </a>
-</header>
+<div th:replace="~{fragments/admin-language :: language-selector('/admin/login')}"></div>
 
 <div class="w-full max-w-md bg-white rounded-lg shadow-lg p-8 space-y-6">
 

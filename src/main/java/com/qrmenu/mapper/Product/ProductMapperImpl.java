@@ -2,12 +2,23 @@ package com.qrmenu.mapper.Product;
 
 import com.qrmenu.dto.Product.requests.ProductRequestDto;
 import com.qrmenu.dto.Product.responses.ProductResponseDto;
+import com.qrmenu.entity.Category;
 import com.qrmenu.entity.Product;
+import com.qrmenu.repository.CategoryRepository;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 
 @Component
 public class ProductMapperImpl implements ProductMapper{
+
+    private CategoryRepository categoryRepository;
+
+    public ProductMapperImpl(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
     @Override
     public ProductResponseDto toDto(Product product) {
         if (product == null) return null;
@@ -20,7 +31,11 @@ public class ProductMapperImpl implements ProductMapper{
         dto.setStatus(product.getStatus());
         dto.setImage(product.getImage());
         dto.setImageContentType(product.getImageContentType());
-        dto.setCategory(product.getCategory());
+        if (product.getCategory() != null) {
+            dto.setCategoryId(product.getCategory().getId());
+            dto.setCategoryName(product.getCategory().getName());
+        }
+
 
         return dto;
     }
@@ -36,7 +51,12 @@ public class ProductMapperImpl implements ProductMapper{
         product.setStatus(product.getStatus());
         product.setImage(dto.getImage());
         product.setImageContentType(dto.getImageContentType());
-        product.setCategory(dto.getCategory());
+
+        if (dto.getCategoryId() != null) {
+            Optional<Category> categoryOpt = categoryRepository.findById(dto.getCategoryId());
+            categoryOpt.ifPresent(product::setCategory);
+        }
+
 
         return product;
     }
@@ -49,9 +69,19 @@ public class ProductMapperImpl implements ProductMapper{
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
         product.setStatus(product.getStatus());
-        product.setImage(dto.getImage());
-        product.setImageContentType(dto.getImageContentType());
-        product.setCategory(dto.getCategory());
+
+        if (dto.getImage() != null && dto.getImage().length > 0) {
+            product.setImage(dto.getImage());
+            product.setImageContentType(dto.getImageContentType());
+        }
+
+        if (dto.getCategoryId() != null) {
+            Optional<Category> categoryOpt = categoryRepository.findById(dto.getCategoryId());
+            categoryOpt.ifPresent(product::setCategory);
+        } else {
+            product.setCategory(null);
+        }
+
 
         return product;
     }

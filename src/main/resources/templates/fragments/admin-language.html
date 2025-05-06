@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- currentUrl parametresi geçerek dil seçiciyi her sayfaya uyarlanabilir yapıyoruz -->
+<header th:fragment="language-selector(currentUrl)" class="absolute top-4 right-4 flex space-x-2">
+    <a th:href="@{${currentUrl}(lang='tr')}"
+       class="inline-block">
+        <img th:src="@{/images/tr.png}" alt="TR" class="w-6 h-4"/>
+    </a>
+    <a th:href="@{${currentUrl}(lang='en')}"
+       class="inline-block">
+        <img th:src="@{/images/en.png}" alt="EN" class="w-6 h-4"/>
+    </a>
+</header>
+</body>
+</html>
