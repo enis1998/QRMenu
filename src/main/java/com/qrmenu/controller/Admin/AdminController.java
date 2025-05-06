@@ -104,7 +104,11 @@ public class AdminController {
             if (imageFile != null && !imageFile.isEmpty()) {
                 productRequestDto.setImage(imageFile.getBytes());
                 productRequestDto.setImageContentType(imageFile.getContentType());
+            } else {
+                productRequestDto.setImage(null);
+                productRequestDto.setImageContentType(null);
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
